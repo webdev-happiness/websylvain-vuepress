@@ -1,0 +1,118 @@
+<template>
+  <main :class="{'navigation-is-open': nav, 'light': this.$page.frontmatter.project || this.$page.frontmatter.post,'post':   this.$page.frontmatter.post, 'project': this.$page.frontmatter.project}">
+    <Nav v-on:navAction="displayNav"/>
+    <section class="site-content">
+      <div class="bck-page"></div>
+      <Home v-if="$page.frontmatter.home" @openModal="showModal = true"/>
+      <Project v-else-if="$page.frontmatter.project"/>
+      <div class="container columns toped page" v-else>
+        <Post :class="{'column  col-lg-12 col-8 ': shouldShowSidebar}" v-if="$page.frontmatter.post" :sidebar-items="sidebarItems"/>
+        <Page :class="{'column  col-lg-12 col-8 ': shouldShowSidebar}" v-else :sidebar-items="sidebarItems"/>
+        <Sidebar :items="sidebarItems" v-if="shouldShowSidebar" :class="{'column col-lg-12 col-4 ': shouldShowSidebar}">
+          <slot name="sidebar-top" slot="top"/>
+          <slot name="sidebar-bottom" slot="bottom"></slot>
+        </Sidebar>
+      </div>
+      <Footer/>
+    </section>
+    <RightSide/>
+  </main>
+</template>
+<script> (function() { var qs,js,q,s,d=document, gi=d.getElementById, ce=d.createElement, gt=d.getElementsByTagName, id="typef_orm_share", b="https://embed.typeform.com/"; if(!gi.call(d,id)){ js=ce.call(d,"script"); js.id=id; js.src=b+"embed.js"; q=gt.call(d,"script")[0]; q.parentNode.insertBefore(js,q) } })() </script>
+
+<script>
+  import Vue from 'vue'
+
+  import nprogress from 'nprogress'
+
+  import Home from './Home.vue'
+  import Page from './Page.vue'
+  import Project from './Project.vue'
+  import Post from './Post.vue'
+  import Nav from './Nav.vue'
+  import RightSide from './RightSide.vue'
+  import Footer from './Footer.vue'
+  import Sidebar from './Sidebar.vue'
+
+  import { resolveSidebarItems } from './util'
+  export default {
+    data(){
+      return {
+        nav: false,
+        isSidebarOpen: false,
+      }
+    },
+    components: {
+      Home, Page, Post, Project, Nav, RightSide, Sidebar, Footer
+    },
+    mounted () {
+      window.addEventListener('scroll', this.onScroll)
+
+      // configure progress bar
+      nprogress.configure({ showSpinner: false })
+
+      this.$router.beforeEach((to, from, next) => {
+        if (to.path !== from.path && !Vue.component(to.name)) {
+          nprogress.start()
+        }
+        next()
+      })
+
+      this.$router.afterEach(() => {
+        nprogress.done()
+        this.isSidebarOpen = false
+        this.nav = false;
+      })
+    },
+    methods:{
+      displayNav(){
+        this.nav = !this.nav;
+      }
+    },
+    computed:{
+      shouldShowSidebar () {
+        const { frontmatter } = this.$page
+        return (
+          !frontmatter.layout &&
+          !frontmatter.home &&
+          frontmatter.sidebar !== false &&
+          this.sidebarItems.length
+        )
+      },
+      sidebarItems () {
+        return resolveSidebarItems(
+          this.$page,
+          this.$route,
+          this.$site,
+          this.$localePath
+        )
+      },
+      pageClasses () {
+        const userPageClass = this.$page.frontmatter.pageClass
+        return [
+          {
+            'no-navbar': !this.shouldShowNavbar,
+            'sidebar-open': this.isSidebarOpen,
+            'no-sidebar': !this.shouldShowSidebar
+          },
+          userPageClass
+        ]
+      }
+    }
+  }
+</script>
+
+<style lang="stylus">
+.site-content
+  .page, .post
+    padding: 0px 11%;
+  .toped
+    padding-top:200px;
+</style>
+
+
+<style src="prismjs/themes/prism-tomorrow.css"></style>
+<style src="./websylvain-styles/base/spectre/spectre.min.css" lang="css"></style>
+<style src="./websylvain-styles/base/spectre/spectre-icons.min.css" lang="css"></style>
+<style src="./websylvain-styles/base/spectre/spectre-exp.min.css" lang="css"></style>
+<style src="./websylvain-styles/app.styl" lang="stylus"></style>

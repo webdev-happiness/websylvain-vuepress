@@ -1,0 +1,29 @@
+.btn{
+  display: block;
+  margin: auto;
+  letter-spacing: .4em;
+  text-transform: uppercase;
+  height: 50px;
+  line-height: 40px;
+  font-size: 10px;
+  box-shadow: 0 10px 35px -15px $second_color;
+  width:100%;
+  text-align: center;
+  background: $second_color;
+  color: #fff!important;
+  -webkit-transition: all .2s;
+  transition: all .2s;
+  &:hover{
+    color: $second_color!important;
+ }
+}
+
+@media only screen and (min-width: 720px) {
+  .btn{
+    height: 50px;
+    line-height: 40px;
+    font-size: 12px;
+    width: 33.3%;
+
+  }
+}

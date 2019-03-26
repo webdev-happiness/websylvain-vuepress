@@ -1,0 +1,20 @@
+.bck-page {
+  left: 0;
+  width: 100%;
+  z-index: -1;
+}
+  .bck-page, .bck-page:after {
+    position: absolute;
+    top: 0;
+    height: 100%;
+  }
+
+  .bck-page:after {
+    content: "";
+    z-index: 20;
+    width: 100%;
+    max-width: 920px;
+    left: 50%;
+    -webkit-transform: translate3d(-50%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
+  }

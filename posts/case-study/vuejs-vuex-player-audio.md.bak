@@ -1,0 +1,111 @@
+---
+layout: Post
+title:  Créer un player audio pour SPA avec Vuejs et Vuex
+description: Nous allons voir aujourd'hui "comment créer un player audio" qui permet d'écouter de la musique sur un site sans pour autant qu'il s'arrête lorsqu'on change de page. Nous utiliserons aussi Vuex afin de pouvoir observer l'avancement de la playlist et changer de fichier audio depuis plusieurs composants.
+published:   2019-01-03
+author: Sylvain Pastor
+img: proto-roadbook.jpg
+categories: prototype audio music
+---
+
+Nous allons voir aujourd'hui comment créer un **player audio** qui permet d'écouter de la musique sur un site sans pour autant qu'il s'arrête lorsqu'on change de page. Nous utiliserons aussi Vuex afin de pouvoir observer l'avancement de la playlist et changer de fichier audio depuis différents composants.
+
+La demo et le code (html, js, css...) de ces composants sont disponibles sur [codepen.io](https://codepen.io/websylvain_dev/pen/roYPeg)
+
+## Prototype
+Sur le projet final il y aura donc trois composants différents:
+- Un player audio permettant d'intéragir avec la playlist
+  - play / stop
+  - précédent / suivant
+  - Afficher le nom de la musique en cours de lecture
+  - Afficher la progression
+  - gestion du volume
+- Un icon SVG qui évolue en fonction de l'état d'avancement de la musique
+- La liste des musiques
+  - En cliquant sur l'une d'elles, on change de titre
+
+## Utilisation de Vuex
+Une des specks importantes de ce cas est de pouvoir intéragir avec la playlist depuis différents endroits. Pour cela j'utilise Vuex afin de créer un store qui aura pour but de partager la liste des fichiers audios et la progression de leur lecture entre mes composants.
+
+### Création du state
+Nous allons y stocker l'état du player (actif / inactif) dans *playing*, l'identifiant dans *current.id* et la progression (temps joué et durée totale) de la musique dans *current.seek*.
+
+``` js
+var store = new Vuex.Store({
+  state: {
+      playing: false,
+      current: {
+        id: 0,
+        seek: {
+          currentTime: 0,
+          durationTime: 0
+        }
+      },
+      songs: [
+        {
+          id: 0,
+          file: 'http://rawhide.band/assets/songs/Mr-moustache.mp3',
+          title: 'Mr Moustache',
+          author: 'Rawhide'
+        },
+        {
+          id: 1,
+          file: 'http://rawhide.band/assets/songs/Last-breath.mp3',
+          title: 'Last Breath',
+          author: 'Rawhide'
+        }
+      ]
+  },
+  mutations: {
+    [...]
+  },
+  getters: {
+    [...]
+  },
+  actions: {
+    [...]
+  },
+});
+```
+### Les mutations afin de mettre le state à jour
+
+Nous allons préparer les **mutations** qui ont pour but de modifier les données présentes dans le state. Ces dernières seront déclanchées par des **actions** elles mêmes utilisées par les différents composants.
+
+``` js
+mutations: {
+    FIRST (state) {
+      state.current.id = 0
+    },
+    SET_CURRENT_TIME (state, time) {
+      state.current.seek.currentTime = time
+    },
+    SET_DURATION_TIME (state, time) {
+      state.current.seek.durationTime = time
+    },
+    SET_SONG (state, id) {
+      if (state.songs[id]) {
+        state.current.id = id
+        state.current.seek.currentTime = 0
+        state.current.seek.durationTime = 0
+      }
+    },
+    NEXT (state) {
+      if (state.songs[state.current.id + 1]) {
+        state.current.id = state.current.id + 1
+        state.current.seek.currentTime = 0
+        state.current.seek.durationTime = 0
+      }
+    },
+    PREVIOUS (state) {
+      if (state.songs[state.current.id - 1]) {
+        state.current.id = state.current.id - 1
+        state.current.seek.currentTime = 0
+        state.current.seek.durationTime = 0
+      }
+    },
+    SET_PLAYING (state, bool) {
+        console.log('mut')
+      this.state.playing = bool
+    }
+},
+```

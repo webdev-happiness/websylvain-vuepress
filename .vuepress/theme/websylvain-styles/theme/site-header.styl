@@ -1,0 +1,64 @@
+.site-header{
+    position: fixed;
+    padding: 25px;
+    z-index: 3
+
+    .navbar-section a{
+      font-family: exo;
+      &.navbar-brand{
+        &.navbar-brand_reverse{
+          display: none;
+        }
+
+        img{
+          width: 60px;
+        }
+      }
+
+      &.mail{
+        display: none;
+      }
+
+      &.cd-nav-trigger{
+        display: block;
+        z-index : 3000;
+        cursor:pointer;
+        font-size: 25px;
+      }
+
+    }
+}
+
+.light {
+  .navbar-brand{
+    &.navbar-brand_normal{
+      display: none;
+    }
+    &.navbar-brand_reverse{
+      display: block!important;
+    }
+  }
+
+}
+
+.navigation-is-open {
+  .cd-nav-trigger{
+    color: black!important;
+  }
+}
+
+@media only screen and (min-width: 960px){
+  .site-header{
+    .navbar-section a {
+      &.mail{
+        display:block!important;
+      }
+
+      &.cd-nav-trigger{
+        display: none!important;
+
+        color: white!important;
+      }
+    }
+  }
+}
